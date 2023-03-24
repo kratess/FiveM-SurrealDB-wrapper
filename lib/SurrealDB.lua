@@ -8,6 +8,8 @@ function SurrealDB.isConnected()
 end
 
 function SurrealDB.multiple(query, ...)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   local args = {...}
 
   if #args > 1 then
@@ -18,6 +20,8 @@ function SurrealDB.multiple(query, ...)
 end
 
 function SurrealDB.query(query, ...)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   local args = {...}
 
   if #args > 1 then
@@ -28,6 +32,8 @@ function SurrealDB.query(query, ...)
 end
 
 function SurrealDB.single(query, ...)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   local args = {...}
 
   if #args > 1 then
@@ -38,6 +44,8 @@ function SurrealDB.single(query, ...)
 end
 
 function SurrealDB.single(query, ...)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   local args = {...}
 
   if #args > 1 then
@@ -48,25 +56,37 @@ function SurrealDB.single(query, ...)
 end
 
 function SurrealDB.select(thing, cb)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   exports.surrealdb:select(thing, cb)
 end
 
 function SurrealDB.selectOne(thing, cb)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   exports.surrealdb:selectOne(thing, cb)
 end
 
 function SurrealDB.create(thing, content, cb)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   exports.surrealdb:create(thing, content, cb)
 end
 
 function SurrealDB.update(thing, content, cb)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   exports.surrealdb:update(thing, content, cb)
 end
 
 function SurrealDB.change(thing, content, cb)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   exports.surrealdb:change(thing, content, cb)
 end
 
 function SurrealDB.merge(thing, content, cb)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
   exports.surrealdb:change(thing, content, cb)
 end
