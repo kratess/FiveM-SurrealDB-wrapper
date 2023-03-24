@@ -66,3 +66,7 @@ end
 function SurrealDB.change(thing, content, cb)
   exports.surrealdb:change(thing, content, cb)
 end
+
+function SurrealDB.merge(thing, content, cb)
+  exports.surrealdb:change(thing, content, cb)
+end

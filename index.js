@@ -74,7 +74,7 @@ function doCreate(thing, content, cb) {
     .catch((e) => {});
 }
 
-// Updates all records in a table, or a specific record, in the database.
+// Updates document.
 function doUpdate(thing, content, cb) {
   if (content === null || Array.isArray(content)) content = {};
 
@@ -83,7 +83,7 @@ function doUpdate(thing, content, cb) {
   });
 }
 
-// Updates all records in a table, or a specific record, in the database.
+// Merge document.
 function doChange(thing, content, cb) {
   if (content === null || Array.isArray(content)) content = {};
   
