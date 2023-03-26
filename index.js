@@ -22,45 +22,65 @@ Surreal.Instance.connect(RPC).then(() =>
   )
 );
 
-// Runs a set of SurrealQL statements against the database.
-function doMultiple(query, params, cb) {
+function _query(query, params) {
   if (params === null || Array.isArray(params)) params = {};
 
-  Surreal.Instance.query(query, params).then((result) => {
-    safeCallback(cb, result);
+  return new Promise(function (resolve, reject) {
+    Surreal.Instance.query(query, params)
+      .then((result) => {
+        reduced = result.reduce((results, query) => {
+          return [...results, query.result];
+        }, []);
+
+        resolve(reduced);
+      })
+      .catch((err) => reject(err));
   });
+}
+
+// Runs a set of SurrealQL statements against the database.
+function doMultiple(query, params, cb) {
+  _query(query, params)
+    .then((result) => {
+      safeCallback(cb, result);
+    })
+    .catch((err) => safeCallback(cb, null));
 }
 
 // Runs a query SurrealQL statement against the database.
 function doQuery(query, params, cb) {
-  if (params === null || Array.isArray(params)) params = {};
-
-  Surreal.Instance.query(query, params).then((result) => {
-    safeCallback(cb, result[0].result);
-  });
+  _query(query, params)
+    .then((result) => {
+      safeCallback(cb, result[0]);
+    })
+    .catch((err) => safeCallback(cb, null));
 }
 
 // Runs a single query SurrealQL statement against the database.
 function doSingle(query, params, cb) {
-  if (params === null || Array.isArray(params)) params = {};
-
-  Surreal.Instance.query(query, params).then((result) => {
-    safeCallback(cb, result[0].result[0]);
-  });
+  _query(query, params)
+    .then((result) => {
+      safeCallback(cb, result[0][0]);
+    })
+    .catch((err) => safeCallback(cb, null));
 }
 
 // Selects all records in a table, or a specific record, from the database.
 function doSelect(thing, cb) {
-  Surreal.Instance.select(thing).then((result) => {
-    safeCallback(cb, result);
-  }).catch((err) => safeCallback(cb, null));
+  Surreal.Instance.select(thing)
+    .then((result) => {
+      safeCallback(cb, result);
+    })
+    .catch((err) => safeCallback(cb, null));
 }
 
 // Selects a specific record, from the database.
 function doSelectOne(thing, cb) {
-  Surreal.Instance.select(thing).then((result) => {
-    safeCallback(cb, result[0]);
-  }).catch((err) => safeCallback(cb, null));
+  Surreal.Instance.select(thing)
+    .then((result) => {
+      safeCallback(cb, result[0]);
+    })
+    .catch((err) => safeCallback(cb, null));
 }
 
 // Creates a record in the database.
@@ -86,7 +106,7 @@ function doUpdate(thing, content, cb) {
 // Merge document.
 function doChange(thing, content, cb) {
   if (content === null || Array.isArray(content)) content = {};
-  
+
   Surreal.Instance.change(thing, content).then((result) => {
     safeCallback(cb, result);
   });
