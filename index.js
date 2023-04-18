@@ -76,11 +76,7 @@ function doSelect(thing, cb) {
 
 // Selects a specific record, from the database.
 function doSelectOne(thing, cb) {
-  Surreal.Instance.select(thing)
-    .then((result) => {
-      safeCallback(cb, result[0]);
-    })
-    .catch((err) => safeCallback(cb, null));
+  doSingle("SELECT * FROM " + thing, {}, cb)
 }
 
 // Creates a record in the database.

@@ -1,5 +1,7 @@
 SurrealDB = {}
 
+SurrealDB.Sync = {}
+
 ---
 -- Check is database is connected
 ---
@@ -43,6 +45,28 @@ function SurrealDB.single(query, ...)
   end
 end
 
+function SurrealDB.Sync.single(query, params)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
+  local res = nil
+  local finishedQuery = false
+
+  if params then
+    exports.surrealdb:single(query, params, function(result)
+      res = result
+      finishedQuery = true
+    end)
+  else
+    exports.surrealdb:single(query, {}, function(result)
+      res = result
+      finishedQuery = true
+    end)
+  end
+
+  repeat Citizen.Wait(0) until finishedQuery == true
+  return res
+end
+
 function SurrealDB.single(query, ...)
   if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
 
@@ -53,6 +77,21 @@ function SurrealDB.single(query, ...)
   else
     exports.surrealdb:single(query, {}, args[1])
   end
+end
+
+function SurrealDB.Sync.select(thing)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
+  local res = nil
+  local finishedQuery = false
+
+  exports.surrealdb:select(thing, function(result)
+    res = result
+    finishedQuery = true
+  end)
+
+  repeat Citizen.Wait(0) until finishedQuery == true
+  return res
 end
 
 function SurrealDB.select(thing, cb)
