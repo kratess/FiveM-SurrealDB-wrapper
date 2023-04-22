@@ -118,14 +118,23 @@ function SurrealDB.update(thing, content, cb)
   exports.surrealdb:update(thing, content, cb)
 end
 
-function SurrealDB.change(thing, content, cb)
+function SurrealDB.merge(thing, content, cb)
   if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
 
   exports.surrealdb:change(thing, content, cb)
 end
 
-function SurrealDB.merge(thing, content, cb)
+function SurrealDB.Sync.merge(thing, content)
   if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
 
-  exports.surrealdb:change(thing, content, cb)
+  local res = nil
+  local finishedQuery = false
+
+  exports.surrealdb:change(thing, content, function(result)
+    res = result
+    finishedQuery = true
+  end)
+
+  repeat Citizen.Wait(0) until finishedQuery == true
+  return res
 end
