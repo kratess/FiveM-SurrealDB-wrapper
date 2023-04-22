@@ -17,7 +17,11 @@ function SurrealDB.multiple(query, ...)
   if #args > 1 then
     exports.surrealdb:multiple(query, args[1], args[2])
   else
-    exports.surrealdb:multiple(query, {}, args[1])
+    if type(args[1]) == "function" then
+      exports.surrealdb:multiple(query, {}, args[1])
+    else
+      exports.surrealdb:multiple(query, args[1], {})
+    end
   end
 end
 
@@ -51,8 +55,34 @@ function SurrealDB.query(query, ...)
   if #args > 1 then
     exports.surrealdb:query(query, args[1], args[2])
   else
-    exports.surrealdb:query(query, {}, args[1])
+    if type(args[1]) == "function" then
+      exports.surrealdb:query(query, {}, args[1])
+    else
+      exports.surrealdb:query(query, args[1], {})
+    end
   end
+end
+
+function SurrealDB.Sync.query(query, params)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
+  local res = nil
+  local finishedQuery = false
+
+  if params then
+    exports.surrealdb:query(query, params, function(result)
+      res = result
+      finishedQuery = true
+    end)
+  else
+    exports.surrealdb:query(query, {}, function(result)
+      res = result
+      finishedQuery = true
+    end)
+  end
+
+  repeat Citizen.Wait(0) until finishedQuery == true
+  return res
 end
 
 function SurrealDB.single(query, ...)
@@ -63,7 +93,11 @@ function SurrealDB.single(query, ...)
   if #args > 1 then
     exports.surrealdb:single(query, args[1], args[2])
   else
-    exports.surrealdb:single(query, {}, args[1])
+    if type(args[1]) == "function" then
+      exports.surrealdb:single(query, {}, args[1])
+    else
+      exports.surrealdb:single(query, args[1], {})
+    end
   end
 end
 
@@ -89,16 +123,10 @@ function SurrealDB.Sync.single(query, params)
   return res
 end
 
-function SurrealDB.single(query, ...)
+function SurrealDB.select(thing, cb)
   if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
 
-  local args = {...}
-
-  if #args > 1 then
-    exports.surrealdb:single(query, args[1], args[2])
-  else
-    exports.surrealdb:single(query, {}, args[1])
-  end
+  exports.surrealdb:select(thing, cb)
 end
 
 function SurrealDB.Sync.select(thing)
@@ -114,12 +142,6 @@ function SurrealDB.Sync.select(thing)
 
   repeat Citizen.Wait(0) until finishedQuery == true
   return res
-end
-
-function SurrealDB.select(thing, cb)
-  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
-
-  exports.surrealdb:select(thing, cb)
 end
 
 function SurrealDB.selectOne(thing, cb)
