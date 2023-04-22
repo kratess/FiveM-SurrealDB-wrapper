@@ -21,6 +21,28 @@ function SurrealDB.multiple(query, ...)
   end
 end
 
+function SurrealDB.Sync.multiple(query, params)
+  if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
+
+  local res = nil
+  local finishedQuery = false
+
+  if params then
+    exports.surrealdb:multiple(query, params, function(result)
+      res = result
+      finishedQuery = true
+    end)
+  else
+    exports.surrealdb:multiple(query, {}, function(result)
+      res = result
+      finishedQuery = true
+    end)
+  end
+
+  repeat Citizen.Wait(0) until finishedQuery == true
+  return res
+end
+
 function SurrealDB.query(query, ...)
   if not SurrealDB.isConnected() then repeat Citizen.Wait(0) until SurrealDB.isConnected() end
 
